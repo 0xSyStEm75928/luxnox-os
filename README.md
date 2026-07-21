@@ -5,6 +5,14 @@
 ![](https://img.shields.io/badge/edition-Community-FFD700?style=flat-square)
 ![](https://img.shields.io/badge/runtime-CUI%20only-FFD700?style=flat-square)
 ![](https://img.shields.io/badge/author-0xSyStEm75928-FFD700?style=flat-square)
+![](https://img.shields.io/badge/Seven%20Sins-Architecture-FFD700?style=flat-square)
+
+
+![](https://img.shields.io/badge/LuxNox-OS-FFD700?style=flat-square)
+![](https://img.shields.io/badge/Evidence--First-design-FFD700?style=flat-square)
+![](https://img.shields.io/badge/edition-Community-FFD700?style=flat-square)
+![](https://img.shields.io/badge/runtime-CUI%20only-FFD700?style=flat-square)
+![](https://img.shields.io/badge/author-0xSyStEm75928-FFD700?style=flat-square)
 
 > CUIだけで完結するビジネス自動化エコシステム。  
 > どんな入力でも Evidence として扱い、JSONで制御してビジネスまで自動化する。
