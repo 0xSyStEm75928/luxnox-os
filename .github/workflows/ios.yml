@@ -21,6 +21,5 @@ jobs:
           echo "Using default scheme: $default"
 
       - name: Build
-        working-directory: ./luxnox_os
         run: |
-          xcodebuild build-for-testing -scheme "luxnox_os" -sdk iphonesimulator
+          xcodebuild build-for-testing -project "luxnox_os/luxnox_os.xcodeproj" -scheme "luxnox_os" -sdk iphonesimulator
