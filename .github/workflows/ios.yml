@@ -1,37 +1,24 @@
-# ------------------------------------------------------------------------------
-# OPTIMIZED: IN-MEMORY JSSH BRIDGE (Zero Disk I/O & FD Isolation)
-# ------------------------------------------------------------------------------
-jssh_bridge_stream() {
-    # 呼び出し元からの STDIN を FD 3 へバックアップ
-    exec 3<&0
-    if command -v jssh &>/dev/null; then
-        jssh "$@" <&3
-    elif [[ -f "${HOME}/workspace/jssh/jssh_gem_kernel.js" ]]; then
-        node "${HOME}/workspace/jssh/jssh_gem_kernel.js" "$@" <&3
-    else
-        cat <&3
-    fi
-    exec 3<&-
-}
+name: SaaC DeviL Kernel Exec
 
-# ------------------------------------------------------------------------------
-# OPTIMIZED: STREAM-BASED POLYGLOT CHAIN (No Payload Buffering)
-# ------------------------------------------------------------------------------
-exec_polyglot_chain_stream() {
-    # ペイロードを変数に保持せず、標準入力をそのままストリームパス
-    if [[ -n "${DETECTED_LANGS[python3]}" ]]; then
-        "${DETECTED_LANGS[python3]}" -c '
-import sys, json
-data = sys.stdin.read().strip()
-print(json.dumps({"status": "SUCCESS", "engine": "Python3", "input_len": len(data)}))
-' | jssh_bridge_stream --pipe
-    fi
+on:
+  push:
+    branches: [ "main" ]
 
-    if [[ -n "${DETECTED_LANGS[node]}" ]]; then
-        "${DETECTED_LANGS[node]}" -e '
-const fs = require("fs");
-const input = fs.readFileSync(0, "utf-8").trim();
-console.log(JSON.stringify({ status: "SUCCESS", engine: "NodeJS", bytes: Buffer.byteLength(input) }));
-' | jssh_bridge_stream --pipe
-    fi
-}
+jobs:
+  run-kernel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Polyglot Script
+        run: |
+          jssh_bridge_stream() {
+              exec 3<&0
+              if command -v jssh &>/dev/null; then
+                  jssh "$@" <&3
+              else
+                  cat <&3
+              fi
+              exec 3<&-
+          }
