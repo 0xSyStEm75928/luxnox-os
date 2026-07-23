@@ -22,4 +22,4 @@ jobs:
 
       - name: Build
         run: |
-          xcodebuild build-for-testing -project "luxnox_os/luxnox_os.xcodeproj" -scheme "luxnox_os" -sdk iphonesimulator
+          xcodebuild build-for-testing -project "luxnox_os.xcodeproj" -scheme "luxnox_os" -sdk iphonesimulator
