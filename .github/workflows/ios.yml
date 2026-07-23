@@ -3,6 +3,8 @@ name: SaaC DeviL Kernel Exec
 on:
   push:
     branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   run-kernel:
@@ -13,12 +15,41 @@ jobs:
 
       - name: Run Polyglot Script
         run: |
+          set -euo pipefail
+
+          # 1. In-Memory Bridge
           jssh_bridge_stream() {
               exec 3<&0
               if command -v jssh &>/dev/null; then
                   jssh "$@" <&3
+              elif [[ -f "${HOME}/workspace/jssh/jssh_gem_kernel.js" ]]; then
+                  node "${HOME}/workspace/jssh/jssh_gem_kernel.js" "$@" <&3
               else
                   cat <&3
               fi
               exec 3<&-
           }
+
+          # 2. Native Runtime Detection
+          declare -A DETECTED_LANGS
+          for lang in "python3" "node" "bash"; do
+              if command -v "$lang" &>/dev/null; then
+                  DETECTED_LANGS[$lang]=$(command -v "$lang")
+              fi
+          done
+
+          # 3. Stream Execution
+          echo "=== Starting SaaC DeviL Kernel Pipeline ==="
+
+          if [[ -n "${DETECTED_LANGS[python3]:-}" ]]; then
+              "${DETECTED_LANGS[python3]}" -c '
+          import sys, json
+          print(json.dumps({"status": "SUCCESS", "engine": "Python3", "env": "GitHub_Actions"}))
+          ' | jssh_bridge_stream --pipe
+          fi
+
+          if [[ -n "${DETECTED_LANGS[node]:-}" ]]; then
+              "${DETECTED_LANGS[node]}" -e '
+          console.log(JSON.stringify({ status: "SUCCESS", engine: "NodeJS", env: "GitHub_Actions" }));
+          ' | jssh_bridge_stream --pipe
+          fi
